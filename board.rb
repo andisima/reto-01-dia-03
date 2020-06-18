@@ -1,6 +1,5 @@
 require 'matrix'
 load 'cell.rb'
-require 'pry'
 
 class Board
   def initialize
@@ -12,31 +11,24 @@ class Board
   end
 
   def read
-    puts "= "*50
-    print @board.each_slice(@board.column_size){|r| p r}
-    puts "= "*50
-
+    temp_board = @board.dup
     (0..9).each do |row|
       (0..9).each do |column|
         cell = @board[row, column]
         status = Cell.new.alive?(cell)
         alive_neighbours = neighbours(row,column)
-
         if status && alive_neighbours >=4
-          @board[row, column] = 0
+          temp_board[row, column] = 0
         elsif status && alive_neighbours >=2
-          @board[row, column] = 1
+          temp_board[row, column] = 1
         elsif status && alive_neighbours <=1
-          @board[row, column] = 0
+          temp_board[row, column] = 0
         elsif status == false && alive_neighbours == 3
-          @board[row, column] = 1
+          temp_board[row, column] = 1
         end
       end
     end
-
-    puts "= "*50
-    print @board.each_slice(@board.column_size){|r| p r}
-    puts "= "*50
+    @board = temp_board
   end
 
   def neighbours(row, column)
@@ -65,15 +57,10 @@ end
 class Matrix
   public :"[]=", :set_element, :set_component
 end
+board = Board.new
 
-i = 0
-loop do
-  i += 1
-  puts i
-  board = Board.new
-  board.build
-  board.read
-  break if i == 5 # this will cause execution to exit the loop
-end
-# puts "= "*50
-# board.print_board
+board.build
+board.print_board
+board.read
+puts "= "*50
+board.print_board
